@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Le Blog de Catherine</title>
+  <style>
+    /* Variables */
+    :root {
+      --clr-bg: #111;
+      --clr-light: #f5f5f5;
+      --clr-accent: #8e44ad;
+      --clr-card: rgba(255,255,255,0.05);
+      --transition: 0.3s ease;
+      --cursor-size: 20px;
+    }
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html,body { height:100%; background:var(--clr-bg); color:var(--clr-light); font-family:'Poppins',sans-serif; overflow-x:hidden; }
+    a { text-decoration:none; color:inherit; }
+    ul { list-style:none; }
+
+    /* Custom Cursor */
+    #cursor {
+      position:fixed; top:0; left:0; width:var(--cursor-size); height:var(--cursor-size);
+      background:rgba(142,68,173,0.7); border-radius:50%;
+      pointer-events:none; transform:translate(-50%,-50%) scale(1);
+      transition:transform .15s ease-out, background .3s;
+      z-index:9999;
+    }
+    a:hover ~ #cursor,
+    button:hover ~ #cursor {
+      transform:translate(-50%,-50%) scale(2);
+      background:rgba(142,68,173,0.4);
+    }
+
+    /* Header */
+    header {
+      position:fixed; top:0; left:0; width:100%; padding:1rem 2rem;
+      display:flex; justify-content:space-between; align-items:center;
+      background:rgba(17,17,17,0.6); backdrop-filter:blur(10px); z-index:10;
+      transition:background var(--transition);
+    }
+    header.scrolled { background:rgba(17,17,17,0.9); }
+    .logo { font-size:1.6rem; font-weight:700; color:var(--clr-accent); }
+    nav ul { display:flex; gap:1.5rem; }
+    nav a { position:relative; padding:.2rem .4rem; font-weight:500; transition:color var(--transition); }
+    nav a::after {
+      content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:var(--clr-accent); transition:width var(--transition);
+    }
+    nav a:hover { color:var(--clr-accent); }
+    nav a:hover::after { width:100%; }
+
+    /* Hero */
+    #hero {
+      position:relative; width:100%; height:80vh; display:flex;
+      align-items:center; justify-content:center; text-align:center;
+      overflow:hidden; padding:0 1rem;
+    }
+    #hero::before {
+      content:''; position:absolute; top:0; left:0; width:100%; height:100%;
+      background:linear-gradient(45deg, #381b29, #111 80%);
+      z-index:1;
+    }
+    .hero-content {
+      position:relative; z-index:2; max-width:800px;
+      animation:fadeIn 1.5s ease-out;
+    }
+    .hero-content h1 {
+      font-size:3rem; color:var(--clr-light); margin-bottom:.5rem;
+      font-family:'Playfair Display',serif; overflow:hidden; white-space:nowrap;
+      border-right:.15em solid var(--clr-light);
+      animation:typing 3s steps(30,end), blink-caret .75s step-end infinite;
+    }
+    .hero-content p {
+      font-size:1.2rem; opacity:0; animation:fadeIn 1s 3s forwards;
+    }
+
+    /* Blog grid */
+    #posts {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:1.5rem; padding:4rem 2rem; max-width:1200px; margin:0 auto;
+    }
+    .post-card {
+      background:var(--clr-card); border-radius:8px; overflow:hidden;
+      display:flex; flex-direction:column; transition: transform var(--transition), box-shadow var(--transition);
+      opacity:0; transform:translateY(20px); /* for scroll reveal */
+    }
+    .post-card.visible { opacity:1; transform:translateY(0); }
+    .post-card:hover {
+      transform:translateY(-6px);
+      box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    }
+    .post-card .thumb {
+      height:160px; background:linear-gradient(135deg,#6f2f8f,#8e44ad);
+    }
+    .post-card .content {
+      flex:1; padding:1rem;
+      display:flex; flex-direction:column;
+    }
+    .post-card h3 {
+      margin-bottom:.5rem; font-size:1.2rem; color:var(--clr-light);
+      font-family:'Playfair Display',serif;
+    }
+    .post-card .meta {
+      font-size:.85rem; color:#aaa; margin-bottom:.8rem;
+    }
+    .post-card p {
+      flex:1; font-size:.95rem; line-height:1.4; color:#ddd; margin-bottom:1rem;
+    }
+    .post-card button {
+      align-self:flex-start; padding:.6rem 1.2rem; border:none; border-radius:4px;
+      background:var(--clr-accent); color:#fff; cursor:pointer; transition:background var(--transition);
+    }
+    .post-card button:hover { background:#6f2f8f; }
+
+    /* Footer */
+    footer {
+      text-align:center; padding:2rem 1rem; color:#666; font-size:.9rem;
+    }
+
+    /* Animations */
+    @keyframes typing { from{width:0;} to{width:100%;} }
+    @keyframes blink-caret {50%{border-color:transparent;}}
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+    /* Responsive */
+    @media(max-width:600px){
+      .hero-content h1{font-size:2rem;}
+      header{padding:.8rem 1rem;}
+      nav ul{gap:1rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Curseur perso -->
+  <div id="cursor"></div>
+
+  <!-- En-tête -->
+  <header id="header">
+    <div class="logo">Catherine Blog</div>
+    <nav>
+      <ul>
+        <li><a href="#hero">Accueil</a></li>
+        <li><a href="#posts">Articles</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-content">
+      <h1>Bienvenue sur mon blog</h1>
+      <p>Je partage ma passion pour le chant, la créativité et l’entrepreneuriat musical.</p>
+    </div>
+  </section>
+
+  <!-- Grille d'articles -->
+  <section id="posts">
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>Comment préparer un solo d’église</h3>
+        <div class="meta">12 Juin 2025 • Chant</div>
+        <p>Découvrez mes astuces pour travailler votre voix, gérer le trac et briller devant la chorale.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>10 chansons incontournables</h3>
+        <div class="meta">5 Juin 2025 • Playlist</div>
+        <p>Ma sélection personnelle des hymnes d’église qui touchent le cœur et élèvent l’âme.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>Stylisme & scène</h3>
+        <div class="meta">28 Mai 2025 • Style</div>
+        <p>Conseils pour choisir votre tenue et rayonner lors de vos prestations chorales.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>Mon parcours Bac+2</h3>
+        <div class="meta">15 Mai 2025 • Parcours</div>
+        <p>De mes études à mes projets : comment j’ai allié rigueur académique et passion musicale.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>Créer et vendre votre musique</h3>
+        <div class="meta">2 Mai 2025 • Business</div>
+        <p>Mes conseils pour monétiser votre art et générer des revenus chaque mois.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+    <article class="post-card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3>Techniques de respiration</h3>
+        <div class="meta">20 Avr. 2025 • Technique</div>
+        <p>Apprenez à maîtriser votre souffle pour des performances vocales plus puissantes.</p>
+        <button>Lire la suite</button>
+      </div>
+    </article>
+  </section>
+
+  <!-- Contact (ancre) -->
+  <section id="contact" style="padding:4rem 2rem; text-align:center;">
+    <h2 style="color:var(--clr-accent); font-family:'Playfair Display',serif; margin-bottom:1rem;">Contactez-moi</h2>
+    <p style="max-width:600px; margin:0 auto 2rem; color:#ccc;">
+      Vous avez une question, une proposition de collaboration ou simplement envie de dire bonjour ? Écrivez-moi !
+    </p>
+    <form style="max-width:500px;margin:0 auto; display:flex;flex-direction:column;gap:1rem;">
+      <input type="text" placeholder="Votre nom" required style="padding:.8rem;border:1px solid #333;border-radius:4px;background:#222;color:#eee;">
+      <input type="email" placeholder="Votre email" required style="padding:.8rem;border:1px solid #333;border-radius:4px;background:#222;color:#eee;">
+      <textarea rows="4" placeholder="Votre message" required style="padding:.8rem;border:1px solid #333;border-radius:4px;background:#222;color:#eee;"></textarea>
+      <button type="submit" style="padding:1rem;border:none;border-radius:4px;background:var(--clr-accent);color:#fff;cursor:pointer;transition:background var(--transition);">
+        Envoyer
+      </button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Catherine — Tous droits réservés
+  </footer>
+
+  <script>
+    // Curseur
+    const cursor = document.getElementById('cursor');
+    let mx=0,my=0,px=0,py=0;
+    window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+    function loop(){ px+=(mx-px)*0.15; py+=(my-py)*0.15; cursor.style.transform = `translate(${px}px,${py}px)`; requestAnimationFrame(loop); }
+    loop();
+
+    // Header opaque au scroll
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', ()=> header.classList.toggle('scrolled', window.scrollY>50));
+
+    // Scroll reveal des cartes
+    const cards = document.querySelectorAll('.post-card');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=> e.isIntersecting && e.target.classList.add('visible'));
+    }, {threshold:0.2});
+    cards.forEach(c=> io.observe(c));
+  </script>
+</body>
+</html>
